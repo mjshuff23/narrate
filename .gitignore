@@ -1,0 +1,51 @@
+# --- Node ---
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.vite/
+.turbo/
+.pnpm-store/
+npm-debug.log*
+pnpm-debug.log*
+
+# --- Python (PDF / TTS helpers) ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- Models, caches, generated audio ---
+# Model weights are provisioned at install time, never committed.
+models/
+.cache/
+.narrate/
+*.onnx
+*.pt
+*.pth
+*.safetensors
+# Generated audio artifacts (fixtures under tests/ are the exception; keep them small)
+*.mp3
+*.wav
+*.pcm
+*.m4b
+!tests/**/*.mp3
+!tests/**/*.wav
+
+# --- Secrets & local config ---
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# --- Editors / OS ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
