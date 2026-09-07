@@ -12,21 +12,25 @@ are ESM-only.
 
 ## Decision
 
-| Tool          | Pin                            | Note                                                                 |
-| ------------- | ------------------------------ | -------------------------------------------------------------------- |
-| Node          | 24 (LTS)                       | `.nvmrc` = `24`; `engines.node` = `>=24 <25`; `engine-strict=true`.  |
-| Module system | ESM                            | `"type": "module"` everywhere; `NodeNext` resolution, `.js` imports. |
-| pnpm          | 11.17.0                        | `packageManager` field. `allowBuilds` limited to esbuild + hooks.    |
-| TypeScript    | 5.9.3                          | **Not 7.x.**                                                         |
-| Vitest        | 4.1.11                         | **Not 5.x.**                                                         |
-| tsx           | 4.23.13                        | Dev runner for the server (slice 2). Node's native type stripping is |
-|               |                                | not a full TS runtime; Node's own docs point to tsx for that.        |
-| ESLint        | 10.10.0                        | Flat config, `typescript-eslint` 8.70.0 recommended rules (untyped). |
-| Prettier      | 3.9.6                          | `format:check` is a CI gate.                                         |
-| Hooks         | simple-git-hooks + lint-staged | pre-commit: lint + format staged files; pre-push: typecheck + tests. |
+| Tool          | Pin                            | Note                                                                                                                               |
+| ------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Node          | 24 (LTS)                       | `.nvmrc` = `24`; `engines.node` = `>=24 <25`; `engine-strict=true`.                                                                |
+| Module system | ESM                            | `"type": "module"` everywhere; `NodeNext` resolution, `.js` imports.                                                               |
+| pnpm          | 11.17.0                        | `packageManager` field. `allowBuilds` limited to esbuild + hooks.                                                                  |
+| TypeScript    | 5.9.3                          | **Not 7.x.**                                                                                                                       |
+| Vitest        | 4.1.11                         | **Not 5.x.**                                                                                                                       |
+| tsx           | 4.23.13                        | Dev runner for the server (slice 2). Node's native type stripping is not a full TS runtime; Node's own docs point to tsx for that. |
+| ESLint        | 10.10.0                        | Flat config, `typescript-eslint` 8.70.0 recommended rules (untyped).                                                               |
+| Prettier      | 3.9.6                          | `format:check` is a CI gate.                                                                                                       |
+| Hooks         | simple-git-hooks + lint-staged | pre-commit: lint + format staged files; pre-push: typecheck + tests.                                                               |
 
 ## Why
 
+- **`.nvmrc` pins the major, not the patch, on purpose.** `24` means every
+  developer and CI run gets the current 24.x, which is how Node ships security
+  fixes. An exact `24.18.0` would freeze those out until someone opens a PR.
+  The lockfile pins the JavaScript dependencies; Node itself floats within the
+  LTS line that `engines` enforces. (Slice 1 was verified on 24.18.0.)
 - **Node 24 not 26.** Vite 8 declares `^20.19 || >=22.12`; `file-type` and
   `unpdf` declare `>=22`. Node 24 satisfies every engine range and is the
   active LTS line. Node 26 would probably work, but "probably" is what broke

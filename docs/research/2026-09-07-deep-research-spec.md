@@ -1,4 +1,4 @@
-<!-- Source: GPT Deep Research, commissioned by Michael Shuff, 2026-09-07. Verbatim except for the removal of the research tool's non-resolving inline citation tokens. Decisions in this document are superseded where docs/decisions/0002 says so. -->
+<!-- Source: GPT Deep Research, commissioned by Michael Shuff, 2026-09-07. Verbatim except for the removal of the research tool's non-resolving inline citation tokens. Decisions in this document are superseded where docs/decisions says so: 0002 (engine, PDF fallback, playback transport, chunking), 0004 (element-table rules), 0001 and 0003 (toolchain and layout). Read docs/decisions/README.md for the order. -->
 
 # Narrate — Decision-Complete Specification
 
