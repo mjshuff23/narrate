@@ -11,7 +11,19 @@ and any model or data artifacts it fetches with their own terms.
 
 ## Installed
 
-_No runtime dependencies have been added yet._
+Runtime dependencies of `@narrate/core` (slice 1). All permissive; imported
+as libraries; no model or data artifacts.
+
+| Package        | Version | License | Integration                                     |
+| -------------- | ------- | ------- | ----------------------------------------------- |
+| `unified`      | 11.0.5  | MIT     | AST pipeline for Markdown and HTML parsing.     |
+| `remark-parse` | 11.0.0  | MIT     | Markdown → mdast.                               |
+| `remark-gfm`   | 4.0.1   | MIT     | GFM tables, task lists, footnotes, autolinks.   |
+| `rehype-parse` | 9.0.1   | MIT     | HTML → hast (parse5 underneath, MIT).           |
+| `file-type`    | 22.0.2  | MIT     | Binary signature detection (PDF, DOCX, images). |
+
+Dev-only tooling (TypeScript, Vitest, ESLint, Prettier, tsx, pnpm) is not
+shipped and not listed.
 
 ## Copyleft boundaries to review before any redistribution
 

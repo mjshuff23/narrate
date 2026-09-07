@@ -11,8 +11,26 @@ text over the network.
 
 ## Status
 
-Pre-alpha. Nothing runs yet. The spec is decided; the build is proceeding in
-small, independently verified slices, one branch and PR each.
+Pre-alpha. The spec is decided and the build is proceeding in small,
+independently verified slices, one branch and PR each.
+
+| Slice | Scope                                                                                 | State |
+| ----- | ------------------------------------------------------------------------------------- | ----- |
+| 1     | Toolchain, semantic IR, format detection, TXT/Markdown/HTML normalizers, golden tests | done  |
+| 2     | Server + web UI: drag-and-drop, paste, speakable preview                              |       |
+| 3     | PDF reading-order pipeline (PyMuPDF4LLM Layout)                                       |       |
+| 4     | Local TTS (Kokoro ONNX bake-off), chunker, first playback                             |       |
+| 5     | Continuous MP3, chapters, resume, playback speed                                      |       |
+| 6     | Optional cloud and fallback providers                                                 |       |
+
+There is no UI yet. `packages/core` is a library with tests:
+
+```sh
+nvm use && pnpm install && pnpm check
+```
+
+Design documents: the research that decides the design is in `docs/research/`;
+every deviation from it is recorded in `docs/decisions/`.
 
 ## Design in one paragraph
 

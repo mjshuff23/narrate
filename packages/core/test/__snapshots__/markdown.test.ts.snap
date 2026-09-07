@@ -1,0 +1,77 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`markdown normalizer > produces the golden spoken text for the element fixture 1`] = `
+"Narrate Fixture Document.
+
+Intro paragraph with bold, italic, struck and inline code text. This line is hard-wrapped across three lines.
+
+Links and Images.
+
+A descriptive link in prose. A bare link Link to example dot org in prose. An autolink Link to docs dot example dot net here. Write to jane dot doe at example dot com for details.
+
+Image: A chart of quarterly revenue by region.
+
+Inline Image: diagram of the pipeline. image mid-sentence.
+
+Lists.
+
+First bullet
+
+Second bullet with reference link
+
+Nested bullet
+
+One. Step one
+
+Two. Step two
+
+Three. Step three
+
+Checked. Done task
+
+Not checked. Open task
+
+Deep Heading Four.
+
+Text under a level-four heading, spoken but not a chapter.
+
+Quotes and Code.
+
+Quote.
+
+A quoted paragraph.
+
+Second quoted paragraph.
+
+End quote.
+
+Code block omitted.
+
+Code block omitted.
+
+Tables.
+
+Table.
+
+Name: Ada; Role: Engineer; Team: Core.
+
+Name: Grace; Role: Admiral; Team: Navy.
+
+Table, 1 rows by 7 columns, omitted.
+
+Footnotes and HTML.
+
+A claim with a footnote footnote one and another footnote two.
+
+Block HTML paragraph inside Markdown.
+
+Line with inline bold html and a break.
+
+Footnote one. The first footnote body.
+
+Footnote two. The second footnote body, with emphasis.
+
+Last Section.
+
+Closing paragraph."
+`;
