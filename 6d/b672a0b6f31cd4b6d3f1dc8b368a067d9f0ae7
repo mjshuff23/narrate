@@ -1,0 +1,21 @@
+README.md
+  s_f2103ded784fa4::t_b4536bb1fc711a 46-56
+THIRD_PARTY_NOTICES.md
+  s_f2103ded784fa4::t_960ca1247349d2 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "6db672a0b6f31cd4b6d3f1dc8b368a067d9f0ae7",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "unknown"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
