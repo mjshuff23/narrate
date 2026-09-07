@@ -28,6 +28,8 @@ describe('inline speakable helpers', () => {
     expect(isMeaningfulAlt('Screenshot')).toBe(false);
     expect(isMeaningfulAlt('IMG_2031.jpg')).toBe(false);
     expect(isMeaningfulAlt('assets/hero.png')).toBe(false);
+    expect(isMeaningfulAlt('My Photo (1).jpg')).toBe(false);
+    expect(isMeaningfulAlt('Screen Shot 2026-09-07 at 10.12.03 PM.png')).toBe(false);
   });
 
   it('rewrites URLs before emails so an address inside a query string stays part of the URL', () => {

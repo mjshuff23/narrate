@@ -78,6 +78,18 @@ which reviewer findings stand, so the build follows one spec, not three.
 - FFmpeg 6.1 on this machine **does** write MP3 chapters (ID3v2.3 and 2.4)
   and ffprobe reads them back. The original report's open item is closed.
 
+## Why
+
+Two independent reviewers with different failure modes converge on a
+smaller set of errors than either alone. GPT's research had the breadth and
+the citations; the coding agent had a shell on the target machine and the
+registries. Where the reviewer could run a command (FFmpeg chapters, package
+metadata, source constants) that verification wins over any citation. Where
+only a citation exists, its strength is recorded (believed vs verified) so a
+later slice knows what still needs measuring. Decisions that survive that
+pass are accepted as the spec; decisions that fail it are overturned here,
+once, rather than re-argued in every slice.
+
 ## Consequences
 
 - Slice 3 (PDF) and slice 4 (local TTS) each open with a measurement, not an

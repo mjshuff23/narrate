@@ -147,9 +147,14 @@ describe('normalizeSource / normalizeSources', () => {
     ).rejects.toBeInstanceOf(NotYetSupportedError);
   });
 
-  it('carries detection warnings into diagnostics', async () => {
+  it('carries detection warnings into diagnostics, one per warning, typed by cause', async () => {
     const { document } = await normalizeSource({ bytes: enc(HTML_DOC), filename: 'notes.txt' });
-    expect(document.diagnostics.some((d) => d.kind === 'detection-conflict')).toBe(true);
+    expect(document.diagnostics.filter((d) => d.kind === 'detection-conflict')).toHaveLength(1);
+    const latin = await normalizeSource({
+      bytes: new Uint8Array([...enc('caf'), 0xe9]),
+      filename: 'c.txt',
+    });
+    expect(latin.document.diagnostics.map((d) => d.kind)).toEqual(['encoding']);
   });
 
   it('combines several sources in order, one chapter per file unless the file opens with an H1', async () => {

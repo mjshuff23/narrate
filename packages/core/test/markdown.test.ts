@@ -127,10 +127,15 @@ describe('markdown normalizer', () => {
       '| a | b | c | d | e | f | g |\n| - | - | - | - | - | - | - |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 |';
     const rows = Array.from({ length: 21 }, (_, i) => `| r${i} | v${i} |`).join('\n');
     const long = `| k | v |\n| - | - |\n${rows}`;
-    expect(spokenText((await md(wide)).document)).toBe('Table, 1 rows by 7 columns, omitted.');
+    expect(spokenText((await md(wide)).document)).toBe('Table, 1 row by 7 columns, omitted.');
     expect(spokenText((await md(long)).document)).toBe('Table, 21 rows by 2 columns, omitted.');
     const twenty = `| k | v |\n| - | - |\n${Array.from({ length: 20 }, (_, i) => `| r${i} | v${i} |`).join('\n')}`;
     expect((await md(twenty)).document.blocks[0]).toMatchObject({ type: 'table', omitted: false });
+  });
+
+  it('never speaks a header label for an empty cell', async () => {
+    const { document } = await md('| Name | Value |\n| - | - |\n| Ada | |\n| | 2 |');
+    expect(spokenText(document)).toBe('Table.\n\nName: Ada.\n\nValue: 2.');
   });
 
   it('turns horizontal rules into pauses', async () => {

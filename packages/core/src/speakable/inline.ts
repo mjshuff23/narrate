@@ -99,7 +99,7 @@ const GENERIC_ALT = new Set([
   'placeholder',
   'untitled',
 ]);
-const FILENAME_ALT_RE = /^[\w\-./\\]+\.(png|jpe?g|gif|svg|webp|bmp|tiff?|avif)$/i;
+const FILENAME_ALT_RE = /^[\w\s\-./\\()]+\.(png|jpe?g|gif|svg|webp|bmp|tiff?|avif)$/i;
 
 /** Alt text worth speaking: not empty, not a filename, not a one-word generic label. */
 export function isMeaningfulAlt(alt: string | undefined | null): alt is string {
@@ -152,9 +152,4 @@ export function ensureTerminalPunctuation(text: string): string {
   const t = text.trim();
   if (t.length === 0) return t;
   return /[.!?:;…]$/.test(t) ? t : `${t}.`;
-}
-
-/** Capitalize the first letter, used after inserting a spoken label like "Image:". */
-export function capitalizeFirst(text: string): string {
-  return text.length === 0 ? text : text[0]!.toUpperCase() + text.slice(1);
 }

@@ -64,14 +64,14 @@ function renderBlock(block: SpeakBlock, path: number[], out: SpokenSegment[]): v
     case 'table': {
       const cols = Math.max(block.header.length, ...block.rows.map((r) => r.length), 0);
       if (block.omitted) {
-        seg(`Table, ${block.rows.length} rows by ${cols} columns, omitted.`);
+        seg(`Table, ${plural(block.rows.length, 'row')} by ${plural(cols, 'column')}, omitted.`);
         break;
       }
       seg('Table.');
       for (const row of block.rows) {
         const cells = row.map((cell, i) => {
           const h = block.header[i];
-          return h && cell ? `${h}: ${cell}` : cell || h || '';
+          return h && cell ? `${h}: ${cell}` : cell || '';
         });
         const line = cells.filter(Boolean).join('; ');
         if (line) seg(ensureTerminalPunctuation(line));
@@ -91,6 +91,10 @@ function renderBlock(block: SpeakBlock, path: number[], out: SpokenSegment[]): v
       seg(`Footnote ${numberToWords(block.index)}. ${block.text}`);
       break;
   }
+}
+
+function plural(n: number, noun: string): string {
+  return `${n} ${noun}${n === 1 ? '' : 's'}`;
 }
 
 function capitalize(s: string): string {

@@ -61,14 +61,12 @@ export async function normalizeSource(
     ...(detection.encoding ? { encoding: detection.encoding } : {}),
     warnings: [...detection.warnings],
   };
+  // Every detection warning becomes exactly one diagnostic, typed by what it is about.
   const diagnostics: Diagnostic[] = detection.warnings.map((w) => ({
-    kind: 'detection-conflict',
+    kind: /UTF-8|decoded as/i.test(w) ? 'encoding' : 'detection-conflict',
     sourceId,
     detail: w,
   }));
-  if (detection.encoding && detection.encoding.startsWith('windows-1252')) {
-    diagnostics.push({ kind: 'encoding', sourceId, detail: `Decoded as ${detection.encoding}` });
-  }
 
   let blocks: SpeakBlock[];
   let title: string | undefined;
