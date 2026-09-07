@@ -41,8 +41,16 @@ are clearly labeled when document text would leave the machine.
 - **Real verification.** Drag-and-drop is tested with an actual file drop.
   Generated audio gets listened to.
 
-## Third-party licensing
+## License
 
-Some dependencies carry copyleft licenses (AGPL, GPL). See
-`THIRD_PARTY_NOTICES.md` once it lands. This is a personal tool; the licensing
-boundary is documented so it can be revisited before any redistribution.
+Narrate's own code is MIT (see `LICENSE`). That license covers the source in
+this repository and nothing else.
+
+Several planned dependencies carry their own terms, which apply to those
+components regardless of this file: PyMuPDF and PyMuPDF Layout are dual-licensed
+AGPL-3.0 or Artifex commercial; Piper, phonemizer, and eSpeak NG are GPL-3.0.
+Whether and how those terms reach code that calls them depends on how the
+components are integrated and on how the software is used or distributed, which
+this README does not attempt to settle. `THIRD_PARTY_NOTICES.md` records each
+dependency's license as it is actually added, so the boundary can be reviewed
+before any redistribution or network-served deployment.
