@@ -1,0 +1,21 @@
+.gitignore
+  s_f2103ded784fa4::t_808147f4703437 1-51
+README.md
+  s_f2103ded784fa4::t_b6b1056d6acc37 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "f744bbe23825d2b7e7ca7f3d1cd1fe17c23b379c",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
