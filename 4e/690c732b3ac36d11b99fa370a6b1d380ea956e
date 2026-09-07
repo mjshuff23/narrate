@@ -1,0 +1,21 @@
+docs/research/2026-09-07-deep-research-spec.md
+  s_f2103ded784fa4::t_a1c104ab76c776 1
+docs/decisions/0001-toolchain-pins.md
+  s_f2103ded784fa4::t_1ff41603a177f0 15-25,29-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "4e690c732b3ac36d11b99fa370a6b1d380ea956e",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "unknown"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
