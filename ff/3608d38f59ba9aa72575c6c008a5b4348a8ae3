@@ -1,0 +1,120 @@
+packages/core/test/markdown.test.ts
+  s_f2103ded784fa4::t_f45c835c35fce8 1-12,16-59,63-71,75-116,123-125,128-141,144-156,160-176
+  s_f2103ded784fa4::t_0598a9535ed70e 13-15,60-62,72-74,117-122,126-127,142-143,157-159
+packages/core/package.json
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-22,25-26
+  s_f2103ded784fa4::t_5b1423bd1033bc 23-24
+docs/decisions/0001-toolchain-pins.md
+  s_f2103ded784fa4::t_83bea37d69edc4 15-26
+  s_f2103ded784fa4::t_cab7d269c3cb43 1-14,27-52
+packages/core/src/normalize/text.ts
+  s_f2103ded784fa4::t_6842450aeeb597 1-29
+packages/core/src/detect/detect.ts
+  s_f2103ded784fa4::t_7ff55c5f2d5b86 1-80,84-91,94-100,104-110,118-128,148-153,157-161,164-180,186-189,194-195,200-249,266-275,278-292,304-349,357-362
+  s_f2103ded784fa4::t_0598a9535ed70e 81-83,92-93,101-103,111-117,129-147,154-156,162-163,181-185,190-193,196-199,250-265,276-277,293-303,350-356
+docs/decisions/0003-workspace-layout.md
+  s_f2103ded784fa4::t_cab7d269c3cb43 1-43
+docs/decisions/0002-spec-deviations-after-delta-audit.md
+  s_f2103ded784fa4::t_cab7d269c3cb43 1-87
+THIRD_PARTY_NOTICES.md
+  s_f2103ded784fa4::t_e6fcd728d86a07 14-26
+packages/core/tsconfig.json
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-9
+README.md
+  s_f2103ded784fa4::t_e6fcd728d86a07 14-33
+package.json
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-48
+packages/core/src/normalize/html.ts
+  s_f2103ded784fa4::t_0598a9535ed70e 86-87,91,113-119,173-174,184-186,232,251-252,256-258,277-282,289-291,363-367,442-446,453-455,497-500
+  s_f2103ded784fa4::t_010bd119153899 2,217-219,226
+  s_f2103ded784fa4::t_6842450aeeb597 1,3-85,88-90,92-112,120-172,175-183,187-216,220-225,227-231,233-250,253-255,259-276,283-288,292-362,368-441,447-452,456-496,501-566
+packages/core/src/types.ts
+  s_f2103ded784fa4::t_10f64257e27b29 1-140
+vitest.config.ts
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-8
+packages/core/src/index.ts
+  s_f2103ded784fa4::t_7ff55c5f2d5b86 1,3-5,7-41,46-75,79-107,114-120,128-136
+  s_f2103ded784fa4::t_f45c835c35fce8 2,6,76-78
+  s_f2103ded784fa4::t_0598a9535ed70e 42-45,108-113,121-127
+packages/core/src/render.ts
+  s_f2103ded784fa4::t_7ff55c5f2d5b86 1-47,50-98
+  s_f2103ded784fa4::t_0598a9535ed70e 48-49
+packages/core/src/speakable/inline.ts
+  s_f2103ded784fa4::t_b19987ffb49a07 11-14,16-19
+  s_f2103ded784fa4::t_10f64257e27b29 1-10,15,20-45,51-156
+  s_f2103ded784fa4::t_0598a9535ed70e 46-50
+docs/research/README.md
+  s_f2103ded784fa4::t_dd034b5badbdaf 1-18
+.prettierrc
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-5
+docs/decisions/README.md
+  s_f2103ded784fa4::t_cab7d269c3cb43 1-11,15
+  s_f2103ded784fa4::t_83bea37d69edc4 12-14,16-17
+packages/core/src/normalize/markdown.ts
+  s_f2103ded784fa4::t_7ff55c5f2d5b86 1-201,205-227,234-252,261-338,342-346,354-362
+  s_f2103ded784fa4::t_0598a9535ed70e 202-204,228-233,253-260,339-341,347-353
+packages/core/test/fixtures/elements.md
+  s_f2103ded784fa4::t_f45c835c35fce8 1-81,83
+  s_f2103ded784fa4::t_0598a9535ed70e 82
+.prettierignore
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-7
+.npmrc
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-2
+eslint.config.js
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-19
+packages/core/test/inline.test.ts
+  s_f2103ded784fa4::t_f45c835c35fce8 1,9-40
+  s_f2103ded784fa4::t_0598a9535ed70e 2-8
+packages/core/test/text.test.ts
+  s_f2103ded784fa4::t_f45c835c35fce8 1-14,21-24,32-40
+  s_f2103ded784fa4::t_0598a9535ed70e 15-20,25-31
+docs/decisions/0004-speakable-rules-slice-1.md
+  s_f2103ded784fa4::t_83bea37d69edc4 14-32
+  s_f2103ded784fa4::t_cab7d269c3cb43 1-13,33-40
+docs/research/2026-09-07-deep-research-spec.md
+  s_f2103ded784fa4::t_dd034b5badbdaf 1-691
+pnpm-workspace.yaml
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-3,7,14-25
+  s_f2103ded784fa4::t_10f64257e27b29 4-6,8-13
+.github/workflows/ci.yml
+  s_f2103ded784fa4::t_cab7d269c3cb43 1-33
+.nvmrc
+  s_f2103ded784fa4::t_7115bdaab56c0e 1
+packages/core/test/fixtures/article-dominant.html
+  s_f2103ded784fa4::t_f45c835c35fce8 1-9
+tsconfig.base.json
+  s_f2103ded784fa4::t_7115bdaab56c0e 1-21
+packages/core/test/html.test.ts
+  s_f2103ded784fa4::t_f45c835c35fce8 1-25,29-50,54-100,104-116,120-122,126-133
+  s_f2103ded784fa4::t_0598a9535ed70e 26-28,51-53,101-103,117-119,123-125
+packages/core/test/detect.test.ts
+  s_f2103ded784fa4::t_0598a9535ed70e 2-8,46-52,59-61,65-70,82-84,89-94,124-126,135-137,154-158
+  s_f2103ded784fa4::t_f45c835c35fce8 1,9-45,53-58,62-64,71-81,85-88,95-123,127-134,138-153,159-160
+packages/core/test/fixtures/page.html
+  s_f2103ded784fa4::t_f45c835c35fce8 1-42,44-63
+  s_f2103ded784fa4::t_e73e05504cc634 43
+docs/research/2026-09-07-delta-audit.md
+  s_f2103ded784fa4::t_32c7f06cea3e13 1-451
+packages/core/test/__snapshots__/html.test.ts.snap
+  s_f2103ded784fa4::t_f3c5b9a42fd8ca 1-55
+packages/core/test/__snapshots__/markdown.test.ts.snap
+  s_f2103ded784fa4::t_42ea0e32df7181 1-77
+pnpm-lock.yaml
+  s_f2103ded784fa4::t_01a048b0948a97 1-2673
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "ff3608d38f59ba9aa72575c6c008a5b4348a8ae3",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
