@@ -1,0 +1,44 @@
+packages/core/test/inline.test.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 33-41
+  s_f2103ded784fa4::t_f5c833a70d6a39 9
+packages/core/src/index.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 12-17
+packages/core/src/normalize/text.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 4-6,11-15,19-59,62-64,66
+.github/workflows/ci.yml
+  s_f2103ded784fa4::t_fec5b0c4d0f1d4 8-11,22-27,30,32
+packages/core/test/markdown.test.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 163-168
+packages/core/test/html.test.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 122-128
+packages/core/src/detect/detect.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 175-208
+  s_f2103ded784fa4::t_c4da1618d24b50 341-346,348
+  s_f2103ded784fa4::t_928e19881b59ba 329
+packages/core/src/speakable/inline.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 72-76,78,83
+packages/core/src/normalize/markdown.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 31,34-39,96,166-167
+packages/core/test/detect.test.ts
+  s_f2103ded784fa4::t_aa9ae4adc6b5a2 97-106
+packages/core/src/normalize/html.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 129-138,146,544-546
+packages/core/test/text.test.ts
+  s_f2103ded784fa4::t_8653fcc5bad83d 34-47,49-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "20e955b3ac42657b80345b6e45de795931251ab6",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
