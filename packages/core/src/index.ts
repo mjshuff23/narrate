@@ -9,7 +9,12 @@ import type { Diagnostic, HeadingBlock, SourceRecord, SpeakBlock, SpeakDocument 
 import { NORMALIZATION_VERSION } from './types.js';
 
 export * from './types.js';
-export { detectFormat, formatFromFilename, UnsupportedFormatError } from './detect/detect.js';
+export {
+  detectFormat,
+  formatFromFilename,
+  UnsupportedFormatError,
+  zipEntryNames,
+} from './detect/detect.js';
 export type { DetectInput, Detection } from './detect/detect.js';
 export { renderSpoken, spokenText } from './render.js';
 export type { SpokenSegment } from './render.js';

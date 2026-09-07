@@ -94,6 +94,16 @@ describe('format detection precedence', () => {
     );
   });
 
+  it('a text line followed by dashes is a divider, not a setext heading, for detection', async () => {
+    expect((await detectFormat({ text: 'before\n---\nafter', filename: 'n.txt' })).format).toBe(
+      'txt',
+    );
+    expect((await detectFormat({ text: 'Title\n=====\n\nprose' })).format).toBe('txt');
+    // Inside a real Markdown file it is still a heading.
+    const { document } = await normalizeSource({ text: 'Title\n=====\n\nprose', filename: 'n.md' });
+    expect(document.blocks[0]).toMatchObject({ type: 'heading', level: 1, text: 'Title' });
+  });
+
   it('a .md file is always Markdown, even without markup', async () => {
     const d = await detectFormat({ text: PROSE, filename: 'plain.md' });
     expect(d.format).toBe('markdown');

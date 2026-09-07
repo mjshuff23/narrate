@@ -31,10 +31,24 @@ describe('plain text normalizer', () => {
     ]);
   });
 
-  it('records provenance offsets', async () => {
-    const src = 'first\n\nsecond one';
+  it('records provenance offsets against the original text, CRLF included', async () => {
+    for (const src of [
+      'first\n\nsecond one',
+      'first\r\n\r\nsecond one',
+      'first\r\n  \r\n\r\nsecond one',
+    ]) {
+      const { document } = await txt(src);
+      const b = document.blocks[1]!;
+      expect(src.slice(b.provenance!.start, b.provenance!.end)).toBe('second one');
+    }
+  });
+
+  it('detects a rule line inside a chunk, not only between blank lines', async () => {
+    const src = 'before\n---\nafter';
     const { document } = await txt(src);
-    const b = document.blocks[1]!;
-    expect(src.slice(b.provenance!.start, b.provenance!.end)).toBe('second one');
+    expect(document.blocks.map((b) => b.type)).toEqual(['paragraph', 'pause', 'paragraph']);
+    const pause = document.blocks[1]!;
+    expect(src.slice(pause.provenance!.start, pause.provenance!.end)).toBe('---');
+    expect(spokenText(document)).toBe('before\n\nafter');
   });
 });

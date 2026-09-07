@@ -6,6 +6,7 @@ import {
   spokenHostname,
   spokenLink,
 } from '../src/index.js';
+import { speakInlineUrls } from '../src/speakable/inline.js';
 
 describe('inline speakable helpers', () => {
   it('speaks hostnames without www, path, query or hash', () => {
@@ -27,6 +28,15 @@ describe('inline speakable helpers', () => {
     expect(isMeaningfulAlt('Screenshot')).toBe(false);
     expect(isMeaningfulAlt('IMG_2031.jpg')).toBe(false);
     expect(isMeaningfulAlt('assets/hero.png')).toBe(false);
+  });
+
+  it('rewrites URLs before emails so an address inside a query string stays part of the URL', () => {
+    expect(speakInlineUrls('Read https://example.com/p?to=a@b.com now')).toBe(
+      'Read Link to example dot com now',
+    );
+    expect(speakInlineUrls('Mail a@b.com or see www.x.org.')).toBe(
+      'Mail a at b dot com or see Link to x dot org.',
+    );
   });
 
   it('converts numbers to words up to 999 and falls back to digits', () => {

@@ -172,6 +172,40 @@ async function detectBinary(
   throw new UnsupportedFormatError(ft.ext, `Unsupported binary format: ${ft.mime}`);
 }
 
+/**
+ * Entry names from a ZIP's central directory, located via the End Of Central
+ * Directory record. Returns undefined if the archive has no parseable directory.
+ * ZIP64 archives (entry count 0xFFFF) are not handled; DOCX files never need it.
+ */
+export function zipEntryNames(bytes: Uint8Array): string[] | undefined {
+  if (bytes.length < 22) return undefined;
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const floor = Math.max(0, bytes.length - 22 - 0xffff);
+  let eocd = -1;
+  for (let i = bytes.length - 22; i >= floor; i -= 1) {
+    if (dv.getUint32(i, true) === 0x06054b50) {
+      eocd = i;
+      break;
+    }
+  }
+  if (eocd < 0) return undefined;
+  const count = dv.getUint16(eocd + 10, true);
+  const cdOffset = dv.getUint32(eocd + 16, true);
+  if (count === 0xffff || cdOffset >= bytes.length) return undefined;
+  const names: string[] = [];
+  const utf8 = new TextDecoder('utf-8');
+  let p = cdOffset;
+  for (let i = 0; i < count; i += 1) {
+    if (p + 46 > bytes.length || dv.getUint32(p, true) !== 0x02014b50) return undefined;
+    const nameLen = dv.getUint16(p + 28, true);
+    const extraLen = dv.getUint16(p + 30, true);
+    const commentLen = dv.getUint16(p + 32, true);
+    names.push(utf8.decode(bytes.subarray(p + 46, p + 46 + nameLen)));
+    p += 46 + nameLen + extraLen + commentLen;
+  }
+  return names;
+}
+
 function latin1(bytes: Uint8Array): string {
   let s = '';
   for (let i = 0; i < bytes.length; i += 1) s += String.fromCharCode(bytes[i]!);
@@ -292,6 +326,7 @@ function scoreMarkdown(text: string): { level: Level; evidence: string } {
   const root = parseMarkdown(text);
   const counts = {
     heading: 0,
+    setext: 0,
     fence: 0,
     table: 0,
     listItems: 0,
@@ -303,9 +338,14 @@ function scoreMarkdown(text: string): { level: Level; evidence: string } {
   };
   const visit = (n: MdNode) => {
     switch (n.type) {
-      case 'heading':
-        counts.heading += 1;
+      case 'heading': {
+        // Only ATX headings (`# Title`) are strong evidence. A setext heading is a line
+        // followed by ---- or ====, which plain text uses as a divider all the time.
+        const s = n.position?.start.offset;
+        if (s !== undefined && text[s] === '#') counts.heading += 1;
+        else counts.setext += 1;
         break;
+      }
       case 'code': {
         const s = n.position?.start.offset;
         const fence = s !== undefined ? text.slice(s, s + 3) : '';

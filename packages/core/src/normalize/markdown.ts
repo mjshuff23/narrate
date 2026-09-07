@@ -28,9 +28,15 @@ import {
   isBareUrlText,
   isMeaningfulAlt,
   numberToWords,
+  speakInlineUrls,
   spokenLink,
 } from '../speakable/inline.js';
-import { htmlFragmentInlineText, newHtmlContext, normalizeHtmlFragment } from './html.js';
+import {
+  flushDropDiagnostics,
+  htmlFragmentInlineText,
+  newHtmlContext,
+  normalizeHtmlFragment,
+} from './html.js';
 import type { HtmlContext } from './html.js';
 
 const parser = unified().use(remarkParse).use(remarkGfm);
@@ -87,6 +93,7 @@ export function normalizeMarkdown(text: string, ctx: MarkdownContext): SpeakBloc
     }
   }
   flushFootnotes(blocks, state);
+  flushDropDiagnostics(state.html);
   ctx.diagnostics.push(...state.html.diagnostics);
   return blocks;
 }
@@ -156,7 +163,8 @@ function inlineAll(nodes: readonly PhrasingContent[], state: State): string {
 function inline(node: PhrasingContent, state: State): string {
   switch (node.type) {
     case 'text':
-      return node.value;
+      // GFM autolinks most URLs and emails into link nodes; this catches the rest.
+      return speakInlineUrls(node.value);
     case 'emphasis':
     case 'strong':
     case 'delete':

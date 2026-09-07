@@ -69,14 +69,18 @@ const URL_RE = /\bhttps?:\/\/[^\s<>()"']+|\bwww\.[^\s<>()"']+/gi;
 const EMAIL_RE = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
 const TRAILING_PUNCT_RE = /[.,;:!?]+$/;
 
-/** Replace bare URLs and email addresses in plain prose with their spoken forms. */
+/**
+ * Replace bare URLs and email addresses in plain prose with their spoken forms.
+ * URLs go first: an address inside a URL's query (`?to=a@b.com`) belongs to the
+ * URL, and the spoken URL contains no `@`, so the email pass cannot re-match it.
+ */
 export function speakInlineUrls(text: string): string {
-  const withEmails = text.replace(EMAIL_RE, (m) => spokenEmail(m));
-  return withEmails.replace(URL_RE, (m) => {
+  const withUrls = text.replace(URL_RE, (m) => {
     const trailing = TRAILING_PUNCT_RE.exec(m)?.[0] ?? '';
     const url = trailing ? m.slice(0, -trailing.length) : m;
     return spokenLink(url) + trailing;
   });
+  return withUrls.replace(EMAIL_RE, (m) => spokenEmail(m));
 }
 
 const GENERIC_ALT = new Set([

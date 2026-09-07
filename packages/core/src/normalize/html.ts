@@ -126,6 +126,16 @@ export function normalizeHtml(text: string, ctx: HtmlContext): SpeakBlock[] {
     const t = titleEl ? collapseWhitespace(textContent(titleEl)) : '';
     if (t) ctx.title = t;
   }
+  flushDropDiagnostics(ctx);
+  return blocks;
+}
+
+/**
+ * Turn the drop census into diagnostics and reset it. Called once per source by
+ * whichever normalizer owns the context: normalizeHtml for HTML documents, the
+ * Markdown normalizer for HTML fragments embedded in Markdown.
+ */
+export function flushDropDiagnostics(ctx: HtmlContext): void {
   for (const [tag, count] of ctx.dropped) {
     ctx.diagnostics.push({
       kind: 'dropped-element',
@@ -133,7 +143,7 @@ export function normalizeHtml(text: string, ctx: HtmlContext): SpeakBlock[] {
       detail: `Dropped ${count} <${tag}> element${count === 1 ? '' : 's'}`,
     });
   }
-  return blocks;
+  ctx.dropped.clear();
 }
 
 /** Blocks from an HTML fragment embedded in another format (Markdown's `html` nodes). */
@@ -531,6 +541,9 @@ function table(el: Element, out: SpeakBlock[], ctx: HtmlContext): void {
           if (cell.type !== 'element' || (cell.tagName !== 'td' && cell.tagName !== 'th')) continue;
           if (cell.tagName !== 'th') allTh = false;
           cells.push(collapseWhitespace(cell.children.map((x) => inline(x, ctx)).join('')));
+          // A spanned cell occupies extra columns; pad so header/value indexes stay aligned.
+          const span = Number(cell.properties?.['colSpan']);
+          for (let i = 1; i < Math.min(span || 1, 64); i += 1) cells.push('');
         }
         if (cells.length > 0) rows.push({ cells, header: inHead || allTh });
       } else if (c.tagName === 'thead' || c.tagName === 'tbody' || c.tagName === 'tfoot') {

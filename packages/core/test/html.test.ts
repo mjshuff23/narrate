@@ -119,6 +119,13 @@ describe('html normalizer', () => {
     );
   });
 
+  it('pads spanned header cells so values keep their labels', async () => {
+    const { document } = await html(
+      '<table><tr><th colspan="2">Q1</th><th>Q2</th></tr><tr><td>a</td><td>b</td><td>c</td></tr></table>',
+    );
+    expect(spokenText(document)).toBe('Table.\n\nQ1: a; b; Q2: c.');
+  });
+
   it('gathers loose inline text in containers into paragraphs', async () => {
     const { document } = await html(
       '<div>Loose text<span> with a span</span>.<p>Para.</p>tail</div>',

@@ -160,6 +160,12 @@ describe('markdown normalizer', () => {
     expect(spokenText(document)).toBe('Block html.\n\nInline bold and a break.');
   });
 
+  it('reports elements dropped from HTML embedded in Markdown', async () => {
+    const { document } = await md('# T\n\n<div><script>x()</script><p>kept</p></div>');
+    expect(spokenText(document)).toBe('T.\n\nkept');
+    expect(document.diagnostics.map((d) => d.detail)).toContain('Dropped 1 <script> element');
+  });
+
   it('records provenance offsets on blocks', async () => {
     const src = 'first\n\nsecond';
     const { document } = await md(src);
