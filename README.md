@@ -41,8 +41,10 @@ are clearly labeled when document text would leave the machine.
 - **Real verification.** Drag-and-drop is tested with an actual file drop.
   Generated audio gets listened to.
 
-## Third-party licensing
+## License
 
-Some dependencies carry copyleft licenses (AGPL, GPL). See
-`THIRD_PARTY_NOTICES.md` once it lands. This is a personal tool; the licensing
-boundary is documented so it can be revisited before any redistribution.
+Narrate's own code is MIT (see `LICENSE`). Some dependencies carry copyleft
+licenses (AGPL, GPL); see `THIRD_PARTY_NOTICES.md` once it lands. The MIT
+license covers this repository's source, not the combined work you build by
+installing those dependencies. This is a personal tool; the boundary is
+documented so it can be revisited before any redistribution.
