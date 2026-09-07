@@ -1,0 +1,33 @@
+docs/decisions/0002-spec-deviations-after-delta-audit.md
+  s_f2103ded784fa4::t_08ef00f823bc1b 81-92
+packages/core/src/index.ts
+  s_f2103ded784fa4::t_04c93f3e559ec7 64,66
+packages/core/src/render.ts
+  s_f2103ded784fa4::t_1c845565cce3df 67,74,96-99
+packages/core/src/speakable/inline.ts
+  s_f2103ded784fa4::t_47f1cf6fc07469 102
+packages/core/test/__snapshots__/markdown.test.ts.snap
+  s_f2103ded784fa4::t_a3f521aed6aa17 60
+packages/core/test/detect.test.ts
+  s_f2103ded784fa4::t_6b7857bbdc90a3 150,152-157
+packages/core/test/inline.test.ts
+  s_f2103ded784fa4::t_b6f85a1a9bbeea 31-32
+packages/core/test/markdown.test.ts
+  s_f2103ded784fa4::t_052b5bebe81079 130,136-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "a5987fbc8c5ca308996cec6722dfc4879440dca5",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "unknown"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
