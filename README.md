@@ -17,17 +17,28 @@ independently verified slices, one branch and PR each.
 | Slice | Scope                                                                                 | State |
 | ----- | ------------------------------------------------------------------------------------- | ----- |
 | 1     | Toolchain, semantic IR, format detection, TXT/Markdown/HTML normalizers, golden tests | done  |
-| 2     | Server + web UI: drag-and-drop, paste, speakable preview                              |       |
-| 3     | PDF reading-order pipeline (PyMuPDF4LLM Layout)                                       |       |
-| 4     | Local TTS (Kokoro ONNX bake-off), chunker, first playback                             |       |
+| 2     | Localhost server + web UI: drag-and-drop, paste, ordered sources, speakable preview   | done  |
+| 4     | Local TTS (Kokoro ONNX bake-off), chunker, first playback, progress, cancel           |       |
+| 3     | PDF reading-order pipeline (PyMuPDF4LLM Layout), fixture corpus                       |       |
 | 5     | Continuous MP3, chapters, resume, playback speed                                      |       |
 | 6     | Optional cloud and fallback providers                                                 |       |
 
-There is no UI yet. `packages/core` is a library with tests:
+Slices run in the order listed (2, 4, 3, 5, 6): the browser lands first, audio
+the PR after, and the PDF work arrives with a working player to test against.
+
+Run it:
 
 ```sh
-nvm use && pnpm install && pnpm check
+nvm use && pnpm install
+pnpm check      # typecheck · lint · format · tests (core, server, web)
+pnpm dev        # server on 127.0.0.1:3210, client on http://127.0.0.1:5173
+pnpm speak file.md   # print what a voice would say, no browser needed
 ```
+
+The server binds to loopback only. Drop files or paste text, press
+"Preview what will be spoken", and read exactly what the voice will get:
+per-source detection, warnings, the spoken text in order, and everything left
+out. No audio yet; that is slice 4.
 
 Design documents: the research that decides the design is in `docs/research/`;
 every deviation from it is recorded in `docs/decisions/`.

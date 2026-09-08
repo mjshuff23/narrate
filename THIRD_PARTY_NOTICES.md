@@ -22,8 +22,17 @@ as libraries; no model or data artifacts.
 | `rehype-parse` | 9.0.1   | MIT     | HTML → hast (parse5 underneath, MIT).           |
 | `file-type`    | 22.0.2  | MIT     | Binary signature detection (PDF, DOCX, images). |
 
-Dev-only tooling (TypeScript, Vitest, ESLint, Prettier, tsx, pnpm) is not
-shipped and not listed.
+Runtime dependencies of `@narrate/server` and `@narrate/web` (slice 2):
+
+| Package     | Version | License | Integration                                       |
+| ----------- | ------- | ------- | ------------------------------------------------- |
+| `express`   | 5.2.1   | MIT     | Localhost HTTP server.                            |
+| `multer`    | 2.3.0   | MIT     | Multipart upload parsing, memory storage, limits. |
+| `react`     | 19.2.8  | MIT     | UI.                                               |
+| `react-dom` | 19.2.8  | MIT     | UI.                                               |
+
+Dev-only tooling (TypeScript, Vitest, ESLint, Prettier, tsx, Vite, pnpm,
+Testing Library, jsdom) is not shipped and not listed.
 
 ## Copyleft boundaries to review before any redistribution
 

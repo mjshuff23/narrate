@@ -15,3 +15,4 @@ makes easier or harder, and what would overturn it).
 | 0002 | 2026-09-07 | [Spec deviations after the delta audit](0002-spec-deviations-after-delta-audit.md) |
 | 0003 | 2026-09-07 | [Workspace layout and the core package](0003-workspace-layout.md)                  |
 | 0004 | 2026-09-07 | [Speakable-text rules the spec left open](0004-speakable-rules-slice-1.md)         |
+| 0005 | 2026-09-07 | [Server and web shell](0005-server-and-web-shell.md)                               |

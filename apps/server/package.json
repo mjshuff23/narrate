@@ -1,0 +1,22 @@
+{
+  "name": "@narrate/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Localhost backend: intake, detection, normalization; later extraction, TTS and audio assembly.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@narrate/core": "workspace:*",
+    "express": "5.2.1",
+    "multer": "2.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/multer": "2.2.0"
+  }
+}
