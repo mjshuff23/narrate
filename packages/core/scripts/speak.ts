@@ -13,7 +13,24 @@ import { normalizeSource, renderSpoken } from '../src/index.js';
 const args = process.argv.slice(2);
 const json = args.includes('--json');
 const file = args.find((a) => !a.startsWith('--'));
-const bytes = new Uint8Array(file ? readFileSync(file) : readFileSync(0));
+
+if (!file && process.stdin.isTTY) {
+  console.error('usage: pnpm speak <file> [--json]   or   cat file | pnpm speak [--json]');
+  process.exit(2);
+}
+
+let bytes: Uint8Array;
+try {
+  bytes = new Uint8Array(file ? readFileSync(file) : readFileSync(0));
+} catch (err) {
+  const code = (err as NodeJS.ErrnoException).code;
+  console.error(
+    code === 'ENOENT'
+      ? `speak: no such file: ${file}`
+      : `speak: cannot read ${file ?? 'stdin'}: ${String(err)}`,
+  );
+  process.exit(1);
+}
 const input = file ? { bytes, filename: basename(file) } : { bytes };
 
 const { document, detection } = await normalizeSource(input);
