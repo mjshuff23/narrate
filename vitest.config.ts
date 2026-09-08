@@ -1,8 +1,6 @@
 import { defineConfig } from 'vitest/config';
 
+// Each workspace package owns its test environment (core/server: node, web: jsdom).
 export default defineConfig({
-  test: {
-    include: ['packages/*/src/**/*.test.ts', 'packages/*/test/**/*.test.ts'],
-    environment: 'node',
-  },
+  test: { projects: ['packages/core', 'apps/server', 'apps/web'] },
 });

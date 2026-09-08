@@ -259,6 +259,11 @@ describe('normalizeSource / normalizeSources', () => {
     expect(tricky.document.diagnostics.map((d) => d.kind)).toEqual(['detection-conflict']);
   });
 
+  it('a single source gets no synthetic chapter heading', async () => {
+    const doc = await normalizeSources([{ text: 'just prose' }]);
+    expect(doc.blocks.map((b) => b.type)).toEqual(['paragraph']);
+  });
+
   it('combines several sources in order, one chapter per file unless the file opens with an H1', async () => {
     const doc = await normalizeSources([
       { text: 'plain notes', filename: 'notes.txt' },

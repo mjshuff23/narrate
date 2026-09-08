@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { detectFormat } from './detect/detect.js';
+import { detectFormat, UnsupportedFormatError } from './detect/detect.js';
 import type { DetectInput, Detection } from './detect/detect.js';
 import { normalizeHtml, newHtmlContext } from './normalize/html.js';
 import { normalizeMarkdown } from './normalize/markdown.js';
@@ -103,24 +103,70 @@ export async function normalizeSource(
   return { document, detection };
 }
 
+/** Outcome of one input inside a batch; a failure never sinks the other inputs. */
+export type SourceResult =
+  | { index: number; filename?: string; ok: true; sourceId: string; detection: Detection }
+  | {
+      index: number;
+      filename?: string;
+      ok: false;
+      error: string;
+      code: 'unsupported' | 'not-yet-supported' | 'empty' | 'error';
+    };
+
+export interface BatchResult {
+  document: SpeakDocument;
+  results: SourceResult[];
+}
+
 /**
- * Several inputs → one SpeakDocument in the given order. Each source becomes a
- * top-level chapter named from its filename unless it already opens with an H1.
+ * Several inputs → one SpeakDocument in the given order. When there is more
+ * than one input, each becomes a top-level chapter named from its filename
+ * unless it already opens with an H1; a lone input is left as it is, because a
+ * spoken "Pasted text one." heading over a single document is noise.
+ * Inputs that cannot be normalized are reported in `results` and skipped.
  */
-export async function normalizeSources(inputs: readonly DetectInput[]): Promise<SpeakDocument> {
+export async function normalizeBatch(inputs: readonly DetectInput[]): Promise<BatchResult> {
   const doc: SpeakDocument = {
     version: NORMALIZATION_VERSION,
     sources: [],
     blocks: [],
     diagnostics: [],
   };
-  for (const [i, input] of inputs.entries()) {
-    const sourceId = `src-${i + 1}`;
-    const { document } = await normalizeSource(input, sourceId);
+  const results: SourceResult[] = [];
+  let n = 0;
+  for (const [index, input] of inputs.entries()) {
+    const named = input.filename ? { filename: input.filename } : {};
+    const sourceId = `src-${n + 1}`;
+    let result: NormalizeResult;
+    try {
+      result = await normalizeSource(input, sourceId);
+    } catch (err) {
+      const code =
+        err instanceof NotYetSupportedError
+          ? 'not-yet-supported'
+          : err instanceof UnsupportedFormatError
+            ? err.detected === 'empty'
+              ? 'empty'
+              : 'unsupported'
+            : 'error';
+      results.push({
+        index,
+        ...named,
+        ok: false,
+        code,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      continue;
+    }
+    n += 1;
+    const { document, detection } = result;
     const first = document.blocks[0];
     const opensWithH1 = first?.type === 'heading' && first.level === 1;
-    if (!opensWithH1) {
-      const name = input.filename ? input.filename.replace(/\.[^.]+$/, '') : `Pasted text ${i + 1}`;
+    if (!opensWithH1 && inputs.length > 1) {
+      const name = input.filename
+        ? input.filename.replace(/\.[^.]+$/, '')
+        : `Pasted text ${index + 1}`;
       const heading: HeadingBlock = {
         type: 'heading',
         sourceId,
@@ -134,6 +180,17 @@ export async function normalizeSources(inputs: readonly DetectInput[]): Promise<
     doc.sources.push(...document.sources);
     doc.diagnostics.push(...document.diagnostics);
     if (!doc.title && document.title) doc.title = document.title;
+    results.push({ index, ...named, ok: true, sourceId, detection });
   }
-  return doc;
+  return { document: doc, results };
+}
+
+/** normalizeBatch without the per-source report; throws if every input failed. */
+export async function normalizeSources(inputs: readonly DetectInput[]): Promise<SpeakDocument> {
+  const { document, results } = await normalizeBatch(inputs);
+  const failed = results.filter((r) => !r.ok);
+  if (inputs.length > 0 && failed.length === inputs.length) {
+    throw new Error(failed.map((r) => r.error).join('; '));
+  }
+  return document;
 }
