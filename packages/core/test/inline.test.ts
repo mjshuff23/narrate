@@ -42,6 +42,12 @@ describe('inline speakable helpers', () => {
     expect(speakInlineUrls('Ask www.bob@example.com or bob@www.example.com.')).toBe(
       'Ask www dot bob at example dot com or bob at www dot example dot com.',
     );
+    // Only a complete email token converts; a longer identifier is left alone.
+    expect(speakInlineUrls('token a@b.com_x stays')).toBe('token a@b.com_x stays');
+    // Bare URLs convert regardless of case.
+    expect(speakInlineUrls('See HTTPS://Example.com/X and WWW.Example.org.')).toBe(
+      'See Link to example dot com and Link to example dot org.',
+    );
   });
 
   it('converts numbers to words up to 999 and falls back to digits', () => {

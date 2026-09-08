@@ -158,16 +158,29 @@ function label(f: SourceFormat): string {
   return f === 'markdown' ? 'Markdown' : f.toUpperCase();
 }
 
-// ISO 32000 puts the header on the first line; readers tolerate up to 1024 bytes
-// of leading junk, so we do too, but require the version to follow.
-const PDF_HEADER_RE = /%PDF-\d\.\d/;
+// ISO 32000 puts the header on the first line; readers tolerate up to 1024 bytes of
+// leading junk, so we do too. The header must start a line and carry a version, and
+// the file must also look like a PDF body (an object near the start or %%EOF at the
+// end), so prose that quotes "%PDF-1.4" is not a PDF.
+const PDF_HEADER_RE = /(?:^|[\r\n])%PDF-\d\.\d/;
+const PDF_HEADER_WINDOW = 1024 + '%PDF-x.y'.length;
+const PDF_BODY_RE = /\d+\s+\d+\s+obj\b/;
+
+function looksLikePdf(bytes: Uint8Array): boolean {
+  if (!PDF_HEADER_RE.test(latin1(bytes.subarray(0, PDF_HEADER_WINDOW)))) return false;
+  const start = latin1(bytes.subarray(0, 65536));
+  const tail = latin1(bytes.subarray(Math.max(0, bytes.length - 2048)));
+  return PDF_BODY_RE.test(start) || tail.includes('%%EOF');
+}
 
 async function detectBinary(
   bytes: Uint8Array,
 ): Promise<{ format: SourceFormat; evidence: string } | undefined> {
-  const head = latin1(bytes.subarray(0, 1024));
-  if (PDF_HEADER_RE.test(head)) {
-    return { format: 'pdf', evidence: '%PDF-x.y header within first 1024 bytes' };
+  if (looksLikePdf(bytes)) {
+    return {
+      format: 'pdf',
+      evidence: '%PDF-x.y header line within first 1024 bytes plus PDF body',
+    };
   }
   const isZip = bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
   if (isZip) {
@@ -235,9 +248,7 @@ export function zipEntryNames(bytes: Uint8Array): string[] | undefined {
 }
 
 function latin1(bytes: Uint8Array): string {
-  let s = '';
-  for (let i = 0; i < bytes.length; i += 1) s += String.fromCharCode(bytes[i]!);
-  return s;
+  return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('latin1');
 }
 
 export function decodeText(bytes: Uint8Array): {

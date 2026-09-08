@@ -71,7 +71,7 @@ const EMAIL_SRC = String.raw`[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}`;
  * One left-to-right scan. Whichever starts first wins: an address inside a URL
  * query belongs to the URL; a `www.` inside an email belongs to the email.
  */
-const URL_OR_EMAIL_RE = new RegExp(String.raw`\b(?:(${EMAIL_SRC})|(${URL_SRC}))`, 'g');
+const URL_OR_EMAIL_RE = new RegExp(String.raw`\b(?:(${EMAIL_SRC})\b|(${URL_SRC}))`, 'gi');
 const TRAILING_PUNCT_RE = /[.,;:!?]+$/;
 
 /** Replace bare URLs and email addresses in plain prose with their spoken forms. */

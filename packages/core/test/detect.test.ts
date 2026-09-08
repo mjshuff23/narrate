@@ -140,12 +140,21 @@ describe('format detection precedence', () => {
     );
   });
 
-  it('a PDF header needs its version; prose that merely mentions %PDF- stays text', async () => {
-    const d = await detectFormat({
-      bytes: enc('The %PDF- marker is how readers spot a PDF.\n\nMore prose.'),
-      filename: 'n.txt',
-    });
-    expect(d.format).toBe('txt');
+  it('prose that quotes a PDF header, even a versioned one at line start, stays text', async () => {
+    for (const text of [
+      'The %PDF- marker is how readers spot a PDF.\n\nMore prose.',
+      'Every PDF begins with %PDF-1.4 or similar.\n\nMore prose.',
+      'Header line:\n%PDF-1.7\nThat is all the file needs, the article claimed.',
+    ]) {
+      expect((await detectFormat({ bytes: enc(text), filename: 'n.txt' })).format).toBe('txt');
+    }
+  });
+
+  it('a real PDF is detected with junk before the header, even straddling the 1024-byte window', async () => {
+    const body = '%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n%%EOF\n';
+    expect((await detectFormat({ bytes: enc(body) })).format).toBe('pdf');
+    const junk = `${'x'.repeat(1020)}\n${body}`; // header begins at byte 1021, version ends past 1024
+    expect((await detectFormat({ bytes: enc(junk), filename: 'r.pdf' })).format).toBe('pdf');
   });
 
   it('a recognizable binary such as PNG is rejected', async () => {
