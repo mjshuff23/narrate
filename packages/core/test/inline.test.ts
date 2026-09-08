@@ -39,6 +39,9 @@ describe('inline speakable helpers', () => {
     expect(speakInlineUrls('Mail a@b.com or see www.x.org.')).toBe(
       'Mail a at b dot com or see Link to x dot org.',
     );
+    expect(speakInlineUrls('Ask www.bob@example.com or bob@www.example.com.')).toBe(
+      'Ask www dot bob at example dot com or bob at www dot example dot com.',
+    );
   });
 
   it('converts numbers to words up to 999 and falls back to digits', () => {

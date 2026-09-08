@@ -5,9 +5,59 @@ import {
   normalizeSources,
   NotYetSupportedError,
   UnsupportedFormatError,
+  zipEntryNames,
 } from '../src/index.js';
 
 const enc = (s: string) => new TextEncoder().encode(s);
+
+/** A minimal but structurally valid ZIP (stored entries, real central directory, EOCD). */
+function zip(names: string[]): Uint8Array {
+  const u16 = (n: number) => [n & 255, (n >> 8) & 255];
+  const u32 = (n: number) => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
+  const local: number[] = [];
+  const central: number[] = [];
+  for (const name of names) {
+    const nb = [...enc(name)];
+    const data = [...enc('x')];
+    const offset = local.length;
+    // local file header: sig, version, flags, method, time, date, crc, csize, usize, nlen, xlen
+    local.push(0x50, 0x4b, 3, 4, ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0));
+    local.push(
+      ...u32(data.length),
+      ...u32(data.length),
+      ...u16(nb.length),
+      ...u16(0),
+      ...nb,
+      ...data,
+    );
+    // central directory header: sig, vmade, vneed, flags, method, time, date, crc, csize, usize,
+    // nlen, xlen, clen, disk, iattr, eattr, local offset, name
+    central.push(
+      0x50,
+      0x4b,
+      1,
+      2,
+      ...u16(20),
+      ...u16(20),
+      ...u16(0),
+      ...u16(0),
+      ...u16(0),
+      ...u16(0),
+    );
+    central.push(
+      ...u32(0),
+      ...u32(data.length),
+      ...u32(data.length),
+      ...u16(nb.length),
+      ...u16(0),
+      ...u16(0),
+    );
+    central.push(...u16(0), ...u16(0), ...u32(0), ...u32(offset), ...nb);
+  }
+  const eocd = [0x50, 0x4b, 5, 6, ...u16(0), ...u16(0), ...u16(names.length), ...u16(names.length)];
+  eocd.push(...u32(central.length), ...u32(local.length), ...u16(0));
+  return new Uint8Array([...local, ...central, ...eocd]);
+}
 const PROSE = 'This is ordinary prose.\n\nIt has two paragraphs and no markup at all.';
 const HTML_DOC = '<!DOCTYPE html><html><body><h1>T</h1><p>Body text here.</p></body></html>';
 const HTML_FRAG = '<div><p>One</p><p>Two</p><ul><li>x</li></ul></div>';
@@ -19,7 +69,7 @@ describe('format detection precedence', () => {
     expect(d.format).toBe('html');
     expect(d.confidence).toBe('strong');
     expect(d.declaredFormat).toBe('txt');
-    expect(d.warnings[0]).toMatch(/notes\.txt contains HTML and was interpreted as HTML/);
+    expect(d.warnings[0]?.detail).toMatch(/notes\.txt contains HTML and was interpreted as HTML/);
   });
 
   it('a .txt file with strong Markdown structure is detected as Markdown', async () => {
@@ -33,32 +83,69 @@ describe('format detection precedence', () => {
     const d = await detectFormat({ bytes, filename: 'report.txt' });
     expect(d.format).toBe('pdf');
     expect(d.confidence).toBe('strong');
-    expect(d.warnings[0]).toMatch(/PDF signature/);
+    expect(d.warnings[0]?.detail).toMatch(/PDF signature/);
   });
 
   it('a .pdf that is actually text is interpreted as text with a warning', async () => {
     const d = await detectFormat({ bytes: enc(PROSE), filename: 'fake.pdf' });
     expect(d.format).toBe('txt');
-    expect(d.warnings[0]).toMatch(/named like a PDF but contains text/);
+    expect(d.warnings[0]?.detail).toMatch(/named like a PDF but contains text/);
   });
 
-  it('a DOCX container is detected from its ZIP contents', async () => {
-    const bytes = new Uint8Array([
-      0x50,
-      0x4b,
-      0x03,
-      0x04,
-      ...enc('....[Content_Types].xml....word/document.xml....'),
-    ]);
-    const d = await detectFormat({ bytes, filename: 'letter.docx' });
+  it('a DOCX container is detected from its ZIP central directory, not from stray bytes', async () => {
+    const docx = zip(['[Content_Types].xml', '_rels/.rels', 'word/document.xml']);
+    const d = await detectFormat({ bytes: docx, filename: 'letter.docx' });
     expect(d.format).toBe('docx');
-  });
-
-  it('a ZIP that is not DOCX is rejected', async () => {
-    const bytes = new Uint8Array([0x50, 0x4b, 0x03, 0x04, ...enc('....something/else.txt....')]);
-    await expect(detectFormat({ bytes, filename: 'archive.docx' })).rejects.toBeInstanceOf(
+    expect(zipEntryNames(docx)).toEqual([
+      '[Content_Types].xml',
+      '_rels/.rels',
+      'word/document.xml',
+    ]);
+    // The same strings as payload bytes, without a directory entry, must not count.
+    const decoy = zip(['readme.txt']);
+    const withDecoy = new Uint8Array([
+      ...decoy.subarray(0, 30),
+      ...enc('word/document.xml'),
+      ...decoy.subarray(30),
+    ]);
+    await expect(detectFormat({ bytes: withDecoy, filename: 'x.docx' })).rejects.toBeInstanceOf(
       UnsupportedFormatError,
     );
+  });
+
+  it('a ZIP that is not DOCX is rejected, as is a ZIP with no central directory', async () => {
+    await expect(
+      detectFormat({ bytes: zip(['something/else.txt']), filename: 'archive.docx' }),
+    ).rejects.toBeInstanceOf(UnsupportedFormatError);
+    const truncated = new Uint8Array([0x50, 0x4b, 0x03, 0x04, ...enc('....')]);
+    await expect(
+      detectFormat({ bytes: truncated, filename: 'broken.docx' }),
+    ).rejects.toBeInstanceOf(UnsupportedFormatError);
+  });
+
+  it('rejects a ZIP whose only EOCD signature sits inside a comment, and one whose directory overruns', async () => {
+    const good = zip(['[Content_Types].xml', 'word/document.xml']);
+    // Append bytes containing a fake EOCD signature: the real EOCD no longer ends the file.
+    const commented = new Uint8Array([...good, 0x50, 0x4b, 0x05, 0x06, 0, 0, 0, 0]);
+    expect(zipEntryNames(commented)).toBeUndefined();
+    // Corrupt the first central-directory name length so the record claims to run past the EOCD.
+    const overrun = new Uint8Array(good);
+    const cd =
+      good.length - 22 - (46 + '[Content_Types].xml'.length) - (46 + 'word/document.xml'.length);
+    overrun[cd + 28] = 0xff;
+    overrun[cd + 29] = 0xff;
+    expect(zipEntryNames(overrun)).toBeUndefined();
+    await expect(detectFormat({ bytes: overrun, filename: 'x.docx' })).rejects.toBeInstanceOf(
+      UnsupportedFormatError,
+    );
+  });
+
+  it('a PDF header needs its version; prose that merely mentions %PDF- stays text', async () => {
+    const d = await detectFormat({
+      bytes: enc('The %PDF- marker is how readers spot a PDF.\n\nMore prose.'),
+      filename: 'n.txt',
+    });
+    expect(d.format).toBe('txt');
   });
 
   it('a recognizable binary such as PNG is rejected', async () => {
@@ -136,7 +223,10 @@ describe('text decoding', () => {
     });
     expect(d.text).toBe('café au lait');
     expect(d.encoding).toBe('windows-1252');
-    expect(d.warnings[0]).toMatch(/not valid UTF-8/);
+    expect(d.warnings[0]).toMatchObject({
+      kind: 'encoding',
+      detail: expect.stringMatching(/not valid UTF-8/),
+    });
   });
 });
 
@@ -155,6 +245,9 @@ describe('normalizeSource / normalizeSources', () => {
       filename: 'c.txt',
     });
     expect(latin.document.diagnostics.map((d) => d.kind)).toEqual(['encoding']);
+    // The filename never influences the kind, even when it looks like an encoding name.
+    const tricky = await normalizeSource({ bytes: enc(HTML_DOC), filename: 'UTF-8.txt' });
+    expect(tricky.document.diagnostics.map((d) => d.kind)).toEqual(['detection-conflict']);
   });
 
   it('combines several sources in order, one chapter per file unless the file opens with an H1', async () => {

@@ -15,7 +15,7 @@ export {
   UnsupportedFormatError,
   zipEntryNames,
 } from './detect/detect.js';
-export type { DetectInput, Detection } from './detect/detect.js';
+export type { DetectInput, Detection, DetectionWarning } from './detect/detect.js';
 export { renderSpoken, spokenText } from './render.js';
 export type { SpokenSegment } from './render.js';
 export {
@@ -59,13 +59,13 @@ export async function normalizeSource(
     byteLength: bytes.byteLength,
     contentHash: createHash('sha256').update(bytes).digest('hex'),
     ...(detection.encoding ? { encoding: detection.encoding } : {}),
-    warnings: [...detection.warnings],
+    warnings: detection.warnings.map((w) => w.detail),
   };
-  // Every detection warning becomes exactly one diagnostic, typed by what it is about.
+  // Every detection warning becomes exactly one diagnostic; the kind travels with the warning.
   const diagnostics: Diagnostic[] = detection.warnings.map((w) => ({
-    kind: /UTF-8|decoded as/i.test(w) ? 'encoding' : 'detection-conflict',
+    kind: w.kind,
     sourceId,
-    detail: w,
+    detail: w.detail,
   }));
 
   let blocks: SpeakBlock[];

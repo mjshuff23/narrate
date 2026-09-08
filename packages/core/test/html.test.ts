@@ -124,6 +124,10 @@ describe('html normalizer', () => {
       '<table><tr><th colspan="2">Q1</th><th>Q2</th></tr><tr><td>a</td><td>b</td><td>c</td></tr></table>',
     );
     expect(spokenText(document)).toBe('Table.\n\nQ1: a; b; Q2: c.');
+    const junk = await html(
+      '<table><tr><th colspan="1.5">A</th><th colspan="-2">B</th></tr><tr><td>1</td><td>2</td></tr></table>',
+    );
+    expect(spokenText(junk.document)).toBe('Table.\n\nA: 1; B: 2.');
   });
 
   it('gathers loose inline text in containers into paragraphs', async () => {

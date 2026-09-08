@@ -65,22 +65,24 @@ export function isBareUrlText(text: string, url: string): boolean {
   return t.length === 0 || t === strip(url);
 }
 
-const URL_RE = /\bhttps?:\/\/[^\s<>()"']+|\bwww\.[^\s<>()"']+/gi;
-const EMAIL_RE = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
+const URL_SRC = String.raw`https?://[^\s<>()"']+|www\.[^\s<>()"']+`;
+const EMAIL_SRC = String.raw`[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}`;
+/**
+ * One left-to-right scan. Whichever starts first wins: an address inside a URL
+ * query belongs to the URL; a `www.` inside an email belongs to the email.
+ */
+const URL_OR_EMAIL_RE = new RegExp(String.raw`\b(?:(${EMAIL_SRC})|(${URL_SRC}))`, 'g');
 const TRAILING_PUNCT_RE = /[.,;:!?]+$/;
 
-/**
- * Replace bare URLs and email addresses in plain prose with their spoken forms.
- * URLs go first: an address inside a URL's query (`?to=a@b.com`) belongs to the
- * URL, and the spoken URL contains no `@`, so the email pass cannot re-match it.
- */
+/** Replace bare URLs and email addresses in plain prose with their spoken forms. */
 export function speakInlineUrls(text: string): string {
-  const withUrls = text.replace(URL_RE, (m) => {
-    const trailing = TRAILING_PUNCT_RE.exec(m)?.[0] ?? '';
-    const url = trailing ? m.slice(0, -trailing.length) : m;
-    return spokenLink(url) + trailing;
+  return text.replace(URL_OR_EMAIL_RE, (m, email: string | undefined, url: string | undefined) => {
+    if (email) return spokenEmail(email);
+    if (!url) return m;
+    const trailing = TRAILING_PUNCT_RE.exec(url)?.[0] ?? '';
+    const bare = trailing ? url.slice(0, -trailing.length) : url;
+    return spokenLink(bare) + trailing;
   });
-  return withUrls.replace(EMAIL_RE, (m) => spokenEmail(m));
 }
 
 const GENERIC_ALT = new Set([

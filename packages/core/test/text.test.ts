@@ -43,6 +43,13 @@ describe('plain text normalizer', () => {
     }
   });
 
+  it('accepts lone CR line endings and keeps CRLF pairs as one break', async () => {
+    const cr = await txt('line one\rline two\r\rsecond para');
+    expect(spokenText(cr.document)).toBe('line one line two\n\nsecond para');
+    const crlf = await txt('line one\r\nline two\r\n\r\nsecond para');
+    expect(spokenText(crlf.document)).toBe('line one line two\n\nsecond para');
+  });
+
   it('detects a rule line inside a chunk, not only between blank lines', async () => {
     const src = 'before\n---\nafter';
     const { document } = await txt(src);

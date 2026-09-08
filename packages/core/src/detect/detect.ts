@@ -1,7 +1,7 @@
 import { fileTypeFromBuffer } from 'file-type';
 import type { Element, Root as HastRoot, RootContent as HastContent } from 'hast';
 import type { Node as MdNode, Parent as MdParent } from 'mdast';
-import type { DetectionConfidence, SourceFormat } from '../types.js';
+import type { DetectionConfidence, DiagnosticKind, SourceFormat } from '../types.js';
 import { looksLikeHtmlDocument, parseHtml } from '../normalize/html.js';
 import { parseMarkdown } from '../normalize/markdown.js';
 
@@ -9,6 +9,12 @@ export interface DetectInput {
   bytes?: Uint8Array;
   text?: string;
   filename?: string;
+}
+
+/** A warning carries its kind so consumers never classify by parsing the message. */
+export interface DetectionWarning {
+  kind: Extract<DiagnosticKind, 'detection-conflict' | 'encoding'>;
+  detail: string;
 }
 
 export interface Detection {
@@ -19,7 +25,7 @@ export interface Detection {
   text?: string;
   encoding?: string;
   evidence: string[];
-  warnings: string[];
+  warnings: DetectionWarning[];
 }
 
 export class UnsupportedFormatError extends Error {
@@ -66,7 +72,8 @@ export function formatFromFilename(filename: string | undefined): SourceFormat |
 export async function detectFormat(input: DetectInput): Promise<Detection> {
   const declared = formatFromFilename(input.filename);
   const evidence: string[] = [];
-  const warnings: string[] = [];
+  const warnings: DetectionWarning[] = [];
+  const conflict = (detail: string) => warnings.push({ kind: 'detection-conflict', detail });
   const name = input.filename ?? 'pasted text';
   const declaredProp = declared ? { declaredFormat: declared } : {};
 
@@ -78,7 +85,7 @@ export async function detectFormat(input: DetectInput): Promise<Detection> {
     if (binary) {
       evidence.push(binary.evidence);
       if (declared && declared !== binary.format) {
-        warnings.push(
+        conflict(
           `${name} has a ${binary.format.toUpperCase()} signature and was interpreted as ${binary.format.toUpperCase()}`,
         );
       }
@@ -88,7 +95,7 @@ export async function detectFormat(input: DetectInput): Promise<Detection> {
     text = decoded.text;
     encoding = decoded.encoding;
     evidence.push(`decoded as ${decoded.encoding}`);
-    if (decoded.warning) warnings.push(decoded.warning);
+    if (decoded.warning) warnings.push({ kind: 'encoding', detail: decoded.warning });
     if (looksBinary(text))
       throw new UnsupportedFormatError('binary', `${name} looks like binary data, not text`);
   } else if (typeof input.text === 'string') {
@@ -98,7 +105,7 @@ export async function detectFormat(input: DetectInput): Promise<Detection> {
   }
 
   if (declared === 'pdf' || declared === 'docx') {
-    warnings.push(
+    conflict(
       `${name} is named like a ${declared.toUpperCase()} but contains text; interpreting the text`,
     );
   }
@@ -115,7 +122,7 @@ export async function detectFormat(input: DetectInput): Promise<Detection> {
       declared !== 'docx' &&
       confidence !== 'default'
     ) {
-      warnings.push(`${name} contains ${label(format)} and was interpreted as ${label(format)}`);
+      conflict(`${name} contains ${label(format)} and was interpreted as ${label(format)}`);
     }
     return { format, confidence, ...declaredProp, text, ...encProp, evidence, warnings };
   };
@@ -151,16 +158,29 @@ function label(f: SourceFormat): string {
   return f === 'markdown' ? 'Markdown' : f.toUpperCase();
 }
 
+// ISO 32000 puts the header on the first line; readers tolerate up to 1024 bytes
+// of leading junk, so we do too, but require the version to follow.
+const PDF_HEADER_RE = /%PDF-\d\.\d/;
+
 async function detectBinary(
   bytes: Uint8Array,
 ): Promise<{ format: SourceFormat; evidence: string } | undefined> {
   const head = latin1(bytes.subarray(0, 1024));
-  if (head.includes('%PDF-')) return { format: 'pdf', evidence: '%PDF- signature' };
+  if (PDF_HEADER_RE.test(head)) {
+    return { format: 'pdf', evidence: '%PDF-x.y header within first 1024 bytes' };
+  }
   const isZip = bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
   if (isZip) {
-    const all = latin1(bytes);
-    if (all.includes('word/document.xml'))
-      return { format: 'docx', evidence: 'ZIP container with word/document.xml' };
+    const names = zipEntryNames(bytes);
+    if (!names) {
+      throw new UnsupportedFormatError('zip', 'ZIP archive has no readable central directory');
+    }
+    if (names.includes('word/document.xml') && names.includes('[Content_Types].xml')) {
+      return {
+        format: 'docx',
+        evidence: 'ZIP central directory lists [Content_Types].xml and word/document.xml',
+      };
+    }
     throw new UnsupportedFormatError('zip', 'ZIP archive is not a DOCX document');
   }
   const ft = await fileTypeFromBuffer(bytes);
@@ -183,7 +203,12 @@ export function zipEntryNames(bytes: Uint8Array): string[] | undefined {
   const floor = Math.max(0, bytes.length - 22 - 0xffff);
   let eocd = -1;
   for (let i = bytes.length - 22; i >= floor; i -= 1) {
-    if (dv.getUint32(i, true) === 0x06054b50) {
+    // A real EOCD's comment runs exactly to the end of the file; a stray signature
+    // inside a comment will not satisfy that.
+    if (
+      dv.getUint32(i, true) === 0x06054b50 &&
+      i + 22 + dv.getUint16(i + 20, true) === bytes.length
+    ) {
       eocd = i;
       break;
     }
@@ -196,12 +221,15 @@ export function zipEntryNames(bytes: Uint8Array): string[] | undefined {
   const utf8 = new TextDecoder('utf-8');
   let p = cdOffset;
   for (let i = 0; i < count; i += 1) {
-    if (p + 46 > bytes.length || dv.getUint32(p, true) !== 0x02014b50) return undefined;
+    if (p + 46 > eocd || dv.getUint32(p, true) !== 0x02014b50) return undefined;
     const nameLen = dv.getUint16(p + 28, true);
     const extraLen = dv.getUint16(p + 30, true);
     const commentLen = dv.getUint16(p + 32, true);
+    const end = p + 46 + nameLen + extraLen + commentLen;
+    // A record that claims to run past the EOCD is malformed; do not trust a truncated name.
+    if (end > eocd) return undefined;
     names.push(utf8.decode(bytes.subarray(p + 46, p + 46 + nameLen)));
-    p += 46 + nameLen + extraLen + commentLen;
+    p = end;
   }
   return names;
 }

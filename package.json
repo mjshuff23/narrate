@@ -17,7 +17,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "speak": "tsx packages/core/scripts/speak.ts"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged",

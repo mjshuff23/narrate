@@ -542,8 +542,9 @@ function table(el: Element, out: SpeakBlock[], ctx: HtmlContext): void {
           if (cell.tagName !== 'th') allTh = false;
           cells.push(collapseWhitespace(cell.children.map((x) => inline(x, ctx)).join('')));
           // A spanned cell occupies extra columns; pad so header/value indexes stay aligned.
-          const span = Number(cell.properties?.['colSpan']);
-          for (let i = 1; i < Math.min(span || 1, 64); i += 1) cells.push('');
+          const rawSpan = Number(cell.properties?.['colSpan']);
+          const span = Number.isInteger(rawSpan) && rawSpan > 0 ? rawSpan : 1;
+          for (let i = 1; i < Math.min(span, 64); i += 1) cells.push('');
         }
         if (cells.length > 0) rows.push({ cells, header: inHead || allTh });
       } else if (c.tagName === 'thead' || c.tagName === 'tbody' || c.tagName === 'tfoot') {
