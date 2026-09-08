@@ -1,0 +1,25 @@
+packages:
+  - packages/*
+  - apps/*
+
+# pnpm 11 blocks install scripts unless allowed here. Only these two need them:
+# esbuild (native binary, used by tsx/vitest) and simple-git-hooks (writes .git/hooks).
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: true
+
+# pnpm 11 refuses packages younger than its default minimum release age unless
+# excluded. typescript-eslint 8.70.0 was inside that window on 2026-09-07.
+# Revisit: remove these once the release is older than the window.
+minimumReleaseAgeExclude:
+  - '@typescript-eslint/eslint-plugin@8.70.0'
+  - '@typescript-eslint/parser@8.70.0'
+  - '@typescript-eslint/project-service@8.70.0'
+  - '@typescript-eslint/scope-manager@8.70.0'
+  - '@typescript-eslint/tsconfig-utils@8.70.0'
+  - '@typescript-eslint/type-utils@8.70.0'
+  - '@typescript-eslint/types@8.70.0'
+  - '@typescript-eslint/typescript-estree@8.70.0'
+  - '@typescript-eslint/utils@8.70.0'
+  - '@typescript-eslint/visitor-keys@8.70.0'
+  - typescript-eslint@8.70.0

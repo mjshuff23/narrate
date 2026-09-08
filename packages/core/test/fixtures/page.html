@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fixture Page Title</title>
+  <style>body { color: red; }</style>
+  <script>window.track = function () { return 1; };</script>
+</head>
+<body>
+  <nav><a href="/">Home</a><a href="/about">About</a></nav>
+  <header><h1>Site Banner Heading</h1></header>
+  <main>
+    <article>
+      <h1>Article &amp; Title</h1>
+      <p>First paragraph with <strong>bold</strong>, <em>italic</em> and <code>inline()</code> code.
+         Also an <a href="https://example.com/x/y?z=1">example link</a> and a bare
+         <a href="https://www.example.org/deep/path">https://www.example.org/deep/path</a> one.</p>
+      <p>Entities: &lt;tag&gt; &amp; &quot;quoted&quot; &copy; 2026.</p>
+      <h2>Images</h2>
+      <p><img src="a.png" alt="A cat sitting on a keyboard"></p>
+      <img src="b.png" alt="">
+      <img src="c.png" alt="logo">
+      <figure>
+        <img src="d.png" alt="Bar chart of monthly signups">
+        <figcaption>Figure 1: signups.</figcaption>
+      </figure>
+      <h2>Lists</h2>
+      <ul>
+        <li>Alpha</li>
+        <li>Beta
+          <ul><li>Beta nested</li></ul>
+        </li>
+      </ul>
+      <ol start="3">
+        <li>Third</li>
+        <li>Fourth</li>
+      </ol>
+      <h3>Quote and Aside</h3>
+      <blockquote><p>Quoted words.</p></blockquote>
+      <aside><p>Side note text.</p></aside>
+      <pre><code class="language-python">print("hi")
+print("there")</code></pre>
+      <h4>Data Table</h4>
+      <table>
+        <thead><tr><th>Name</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Alpha</td><td>1</td></tr>
+          <tr><td>Beta</td><td>2</td></tr>
+        </tbody>
+      </table>
+      <hr>
+      <p hidden>Hidden paragraph.</p>
+      <p aria-hidden="true">Aria hidden paragraph.</p>
+      <p style="display: none">Display none paragraph.</p>
+      <form><input name="q"><button>Search</button></form>
+      <div>Loose text in a div<span> with a span</span>.</div>
+      <p>Final paragraph.</p>
+    </article>
+  </main>
+  <footer><p>Footer text.</p></footer>
+  <noscript>Enable JS</noscript>
+</body>
+</html>

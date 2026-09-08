@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`html normalizer > produces the golden spoken text for the page fixture 1`] = `
+"Article & Title.
+
+First paragraph with bold, italic and inline() code. Also an example link and a bare Link to example dot org one.
+
+Entities: <tag> & "quoted" © 2026.
+
+Images.
+
+Image: A cat sitting on a keyboard.
+
+Image: Bar chart of monthly signups.
+
+Figure 1: signups.
+
+Lists.
+
+Alpha
+
+Beta
+
+Beta nested
+
+Three. Third
+
+Four. Fourth
+
+Quote and Aside.
+
+Quote.
+
+Quoted words.
+
+End quote.
+
+Aside.
+
+Side note text.
+
+Code block omitted.
+
+Data Table.
+
+Table.
+
+Name: Alpha; Value: 1.
+
+Name: Beta; Value: 2.
+
+Loose text in a div with a span.
+
+Final paragraph."
+`;

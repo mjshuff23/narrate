@@ -1,0 +1,26 @@
+{
+  "name": "@narrate/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Format detection and speakable-text normalization: documents in, SpeakDocument out.",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "file-type": "22.0.2",
+    "rehype-parse": "9.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "unified": "11.0.5"
+  },
+  "devDependencies": {
+    "@types/hast": "3.0.5",
+    "@types/mdast": "4.0.4",
+    "@types/unist": "3.0.3"
+  }
+}
