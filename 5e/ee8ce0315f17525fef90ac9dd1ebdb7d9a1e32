@@ -1,0 +1,25 @@
+packages/core/test/inline.test.ts
+  s_f2103ded784fa4::t_a819ef45707359 45-50
+packages/core/src/detect/detect.ts
+  s_f2103ded784fa4::t_a819ef45707359 161-174,179-183,251
+packages/core/src/speakable/inline.ts
+  s_f2103ded784fa4::t_a819ef45707359 74
+packages/core/test/detect.test.ts
+  s_f2103ded784fa4::t_a819ef45707359 143-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "5eee8ce0315f17525fef90ac9dd1ebdb7d9a1e32",
+  "prompts": {},
+  "sessions": {
+    "s_f2103ded784fa4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "694211ad-8517-4c47-9141-6cb03e702fd7",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Michael Shuff <mjshuff23@gmail.com>"
+    }
+  }
+}
